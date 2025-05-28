@@ -179,8 +179,6 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING, Any, Collection
 
-from starlette import applications
-from starlette.routing import Match
 from wrapt import wrap_function_wrapper
 
 from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
@@ -218,11 +216,11 @@ class StarletteInstrumentor(BaseInstrumentor):
     See `BaseInstrumentor`.
     """
 
-    _instrumented_starlette_apps: set[applications.Starlette] = set()
+    _instrumented_starlette_apps = set()
 
     @staticmethod
     def instrument_app(
-        app: applications.Starlette,
+        app,
         server_request_hook: ServerRequestHook = None,
         client_request_hook: ClientRequestHook = None,
         client_response_hook: ClientResponseHook = None,
@@ -253,7 +251,7 @@ class StarletteInstrumentor(BaseInstrumentor):
             )
 
     @staticmethod
-    def uninstrument_app(app: applications.Starlette):
+    def uninstrument_app(app):
         app.user_middleware = [
             x
             for x in app.user_middleware
@@ -308,6 +306,8 @@ class StarletteInstrumentor(BaseInstrumentor):
 
             return result
 
+        from starlette import applications
+
         # Wrap Starlette's __init__ method to add instrumentation
         wrap_function_wrapper(
             applications.Starlette,
@@ -326,11 +326,13 @@ class StarletteInstrumentor(BaseInstrumentor):
         for app in list(StarletteInstrumentor._instrumented_starlette_apps):
             self.uninstrument_app(app)
 
+        from starlette import applications
+
         unwrap(applications.Starlette, "__init__")
 
     @staticmethod
     def _add_instrumentation_middleware(
-        app: applications.Starlette,
+        app,
         tracer,
         meter,
         server_request_hook,
@@ -366,6 +368,8 @@ def _get_route_details(scope: dict[str, Any]) -> str | None:
     Returns:
         The path to the route if found, otherwise None.
     """
+    from starlette.routing import Match
+
     app = scope["app"]
     route: str | None = None
 
