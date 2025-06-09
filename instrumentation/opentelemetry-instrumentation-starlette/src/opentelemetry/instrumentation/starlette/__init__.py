@@ -178,6 +178,7 @@ from __future__ import annotations
 
 from functools import partial
 from typing import TYPE_CHECKING, Any, Collection
+from weakref import WeakSet
 
 from wrapt import wrap_function_wrapper
 
@@ -216,7 +217,7 @@ class StarletteInstrumentor(BaseInstrumentor):
     See `BaseInstrumentor`.
     """
 
-    _instrumented_starlette_apps = set()
+    _instrumented_starlette_apps = WeakSet()
 
     @staticmethod
     def instrument_app(
