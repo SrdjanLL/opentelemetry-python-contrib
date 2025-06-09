@@ -197,6 +197,8 @@ from opentelemetry.semconv.trace import SpanAttributes
 from opentelemetry.trace import TracerProvider, get_tracer
 from opentelemetry.util.http import get_excluded_urls
 
+# pylint:disable=import-outside-toplevel
+
 if TYPE_CHECKING:
     from typing import TypedDict, Unpack
 
